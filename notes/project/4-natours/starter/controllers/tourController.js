@@ -13,8 +13,19 @@ const Tour = require('../models/tourModel');
 
 //GET requests
 exports.getAllTours = async (req, res) => {
-  //query for all the documents in the collection
-  const tours = await Tour.find();
+  //exclude fields from query filter
+  const queryObject = { ...req.query }; //this '{...}' is made so we get a hard copy
+  //because if we simply do 'queryObj = req.query' we will make a pointer
+  //wich will alter the properties of req.query, which is bad
+  const excludedFields = ['page', 'sort', 'limit', 'fields'];
+  excludedFields.forEach(el => delete queryObject[el]);
+  console.log(req.query, queryObject);
+
+  //.find() = query for all the documents in the collection
+  const tours = await Tour.find(queryObject);
+  //req.query is an object representing the query (e.g. /tour?difficulty=medium)
+  //if the url has a query, it will be passed to the find() function
+  //if not, will find all
 
   res.status(200).json({
     status: 'success',
