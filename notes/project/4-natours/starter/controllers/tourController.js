@@ -1,7 +1,9 @@
+const { listenerCount } = require('../models/tourModel');
 const Tour = require('../models/tourModel');
 
 //GET requests
 exports.getAllTours = async (req, res) => {
+  //build query
   //exclude fields from query filter
   const queryObject = { ...req.query }; //this '{...}' is made so we get a hard copy
   //because if we simply do 'queryObj = req.query' we will make a pointer
@@ -11,11 +13,19 @@ exports.getAllTours = async (req, res) => {
   console.log(req.query, queryObject);
 
   //.find() = query for all the documents in the collection
-  const query = Tour.find(queryObject);
+  let query = Tour.find(queryObject);
   //req.query is an object representing the query (e.g. /tour?difficulty=medium)
   //if the url has a query, it will be passed to the find() function
   //if not, will find all
 
+  //sorting if requested
+  if (req.query.sort) {
+    //if there is a sort property in the query
+    query = query.sort(req.query.sort);
+    //query will be sorted by the value of the sort property (price, date...)
+  }
+
+  //execute query
   const tours = await query;
   //this is made to ease the implementation of future functions
   //such as sort, limit, pagination...
