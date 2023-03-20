@@ -1,32 +1,33 @@
 const Tour = require('../models/tourModel');
+const APIfeatures = require('./../util/APIfeatures');
 
 //GET requests
 exports.getAllTours = async (req, res) => {
-  //exclude fields from query filter
-  const queryObject = { ...req.query }; //this '{...}' is made so we get a hard copy
-  //because if we simply do 'queryObj = req.query' we will make a pointer
-  //wich will alter the properties of req.query, which is bad
-  const excludedFields = ['page', 'sort', 'limit', 'fields'];
-  excludedFields.forEach(el => delete queryObject[el]);
-  console.log(req.query, queryObject);
+  try {
+    //execute query
+    const features = new APIfeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .paginate();
+    //manipulate the query using these methods
+    //then await the query response
+    const tours = await features.query;
+    //this is made to ease the implementation of future functions
+    //such as sort, limit, pagination...
 
-  //.find() = query for all the documents in the collection
-  const query = Tour.find(queryObject);
-  //req.query is an object representing the query (e.g. /tour?difficulty=medium)
-  //if the url has a query, it will be passed to the find() function
-  //if not, will find all
-
-  const tours = await query;
-  //this is made to ease the implementation of future functions
-  //such as sort, limit, pagination...
-
-  res.status(200).json({
-    status: 'success',
-    results: tours.length, //just to know how many results
-    data: {
-      tours: tours //--> the tours on the rght is tours from line 23 (json.parse)
-    }
-  });
+    res.status(200).json({
+      status: 'success',
+      results: tours.length, //just to know how many results
+      data: {
+        tours: tours
+      }
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err.message
+    });
+  }
 };
 
 exports.getTour = async (req, res) => {
