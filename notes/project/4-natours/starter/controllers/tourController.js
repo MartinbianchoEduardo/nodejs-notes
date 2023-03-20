@@ -1,16 +1,5 @@
 const Tour = require('../models/tourModel');
 
-// commented because mongodb does this for us now
-// exports.checkId = (req, res, next, val) => {
-//   if (Number(req.params.id) > tours.length || !Number(req.params.id)) {
-//     return res.status(404).json({
-//       status: 'fail',
-//       message: 'invalid id'
-//     });
-//   }
-//   next();
-// };
-
 //GET requests
 exports.getAllTours = async (req, res) => {
   //exclude fields from query filter
@@ -22,10 +11,14 @@ exports.getAllTours = async (req, res) => {
   console.log(req.query, queryObject);
 
   //.find() = query for all the documents in the collection
-  const tours = await Tour.find(queryObject);
+  const query = Tour.find(queryObject);
   //req.query is an object representing the query (e.g. /tour?difficulty=medium)
   //if the url has a query, it will be passed to the find() function
   //if not, will find all
+
+  const tours = await query;
+  //this is made to ease the implementation of future functions
+  //such as sort, limit, pagination...
 
   res.status(200).json({
     status: 'success',
