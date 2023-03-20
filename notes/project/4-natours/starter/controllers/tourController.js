@@ -1,48 +1,17 @@
-const { listenerCount } = require('../models/tourModel');
 const Tour = require('../models/tourModel');
+const APIfeatures = require('./../util/APIfeatures');
 
 //GET requests
 exports.getAllTours = async (req, res) => {
   try {
-    //build query
-    //exclude fields from query filter
-    const queryObject = { ...req.query }; //this '{...}' is made so we get a hard copy
-    //because if we simply do 'queryObj = req.query' we will make a pointer
-    //wich will alter the properties of req.query, which is bad
-    const excludedFields = ['page', 'sort', 'limit', 'fields'];
-    excludedFields.forEach(el => delete queryObject[el]);
-    console.log(req.query, queryObject);
-
-    //.find() = query for all the documents in the collection
-    let query = Tour.find(queryObject);
-    //req.query is an object representing the query (e.g. /tour?difficulty=medium)
-    //if the url has a query, it will be passed to the find() function
-    //if not, will find all
-
-    //sorting if requested
-    if (req.query.sort) {
-      //if there is a sort property in the query
-      query = query.sort(req.query.sort);
-      //query will be sorted by the value of the sort property (price, date...)
-    }
-
-    //pagination
-    const page = +req.query.page || 1;
-    const limit = +req.query.limit || 100;
-    const skip = (page - 1) * limit;
-
-    query = query.skip(skip).limit(limit);
-
-    if (req.query.page) {
-      //if there is a page definition in query
-      const numTours = await Tour.countDocuments();
-      //counts the number of documents in the response
-      if (skip >= numTours) throw new Error('this page is empty');
-      //if the number of skipped items >= total of items = error
-    }
-
     //execute query
-    const tours = await query;
+    const features = new APIfeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .paginate();
+    //manipulate the query using these methods
+    //then await the query response
+    const tours = await features.query;
     //this is made to ease the implementation of future functions
     //such as sort, limit, pagination...
 
@@ -50,13 +19,13 @@ exports.getAllTours = async (req, res) => {
       status: 'success',
       results: tours.length, //just to know how many results
       data: {
-        tours: tours //--> the tours on the rght is tours from line 23 (json.parse)
+        tours: tours
       }
     });
   } catch (err) {
     res.status(400).json({
       status: 'fail',
-      message: err
+      message: err.message
     });
   }
 };
