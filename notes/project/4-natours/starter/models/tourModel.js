@@ -4,13 +4,13 @@ const mongoose = require('mongoose');
 const tourSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
-    unique: true
+    required: [true, 'no name was given'],
+    unique: [true, 'this name is already being used']
   },
   rating: Number,
   price: {
     type: Number,
-    required: true
+    required: [true, 'no price was given']
   }
 });
 

@@ -1,6 +1,6 @@
 const Tour = require('../models/tourModel');
 
-// mongodb will do this now
+// commented because mongodb does this for us now
 // exports.checkId = (req, res, next, val) => {
 //   if (Number(req.params.id) > tours.length || !Number(req.params.id)) {
 //     return res.status(404).json({
@@ -11,30 +11,25 @@ const Tour = require('../models/tourModel');
 //   next();
 // };
 
-exports.checkBody = (req, res, next) => {
-  if (!req.body.price || !req.body.name) {
-    return res.status(400).json({
-      status: 'fail',
-      message: 'missing name or price on the request'
-    });
-  }
-  next();
-};
-
 //GET requests
-exports.getAllTours = (req, res) => {
-  console.log(req.requestTime);
+exports.getAllTours = async (req, res) => {
+  //query for all the documents in the collection
+  const tours = await Tour.find();
+
   res.status(200).json({
-    status: 'success'
-    // results: tours.length, //just to know how many results
-    // data: {
-    //   tours: tours //--> the tours on the rght is tours from line 23 (json.parse)
-    // }
+    status: 'success',
+    results: tours.length, //just to know how many results
+    data: {
+      tours: tours //--> the tours on the rght is tours from line 23 (json.parse)
+    }
   });
 };
 
-exports.getTour = (req, res) => {
-  const tour = tours.find(tour => tour.id === Number(req.params.id));
+exports.getTour = async (req, res) => {
+  const tour = await Tour.findById(req.params.id);
+  //req.params.id is router.route('/:id') in tourRoutes.js
+  //if it was '/:name' instead of '/:id', the variable would be 'name' (req.params.name)
+
   res.status(200).json({
     status: 'success',
     data: { tour }
@@ -42,25 +37,59 @@ exports.getTour = (req, res) => {
 };
 
 //POST requests
-exports.createTour = (req, res) => {
-  //201 == created
-  res.status(201).json({
-    status: 'success'
-    // data: {
-    //   tour: newTour
-    // }
-  });
+exports.createTour = async (req, res) => {
+  try {
+    //create method right in the model itself
+    const newTour = await Tour.create(req.body);
+
+    //201 == created
+    res.status(201).json({
+      status: 'success',
+      data: {
+        tour: newTour
+      }
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err
+    });
+  }
 };
 
 //PATCH
 //put = expect we'll send the entire object to be updated
 //patch = only expect the properties to be updated
+exports.updateTour = async (req, res) => {
+  try {
+    const updatedTour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+      new: true, //this will make that the new document will be returned
+      runsValidators: true //will run the validators specified in the schema to check the updated properties
+    });
+    res.status(200).json({
+      status: 'success',
+      tour: updatedTour
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err
+    });
+  }
+};
 
 //DELETE
-exports.deleteTour = (req, res) => {
-  //this doesn't delete anything, it's just for looks
-  res.status(204).json({
-    status: 'success',
-    data: null
-  });
+exports.deleteTour = async (req, res) => {
+  try {
+    await Tour.findByIdAndRemove(req.params.id);
+    res.status(204).json({
+      status: 'success',
+      data: null
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err
+    });
+  }
 };
