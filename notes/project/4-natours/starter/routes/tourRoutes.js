@@ -4,7 +4,7 @@ const router = express.Router();
 
 //this middleware will only be used if the route has an 'id' param
 //val == value of parameter in question (id)
-router.param('id', tourController.checkId);
+// router.param('id', tourController.checkId);
 
 router
   .route('/')
