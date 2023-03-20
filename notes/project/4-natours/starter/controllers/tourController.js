@@ -1,29 +1,25 @@
-const fs = require('fs');
-const tours = JSON.parse(fs.readFileSync('./dev-data/data/tours-simple.json'));
-
-exports.checkId = (req, res, next, val) => {
-  if (Number(req.params.id) > tours.length || !Number(req.params.id)) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'invalid id'
-    });
-  }
-  next();
-};
-
-exports.checkBody = (req, res, next) => {
-  if (!req.body.price || !req.body.name) {
-    return res.status(400).json({
-      status: 'fail',
-      message: 'missing name or price on the request'
-    });
-  }
-  next();
-};
+const Tour = require('../models/tourModel');
 
 //GET requests
-exports.getAllTours = (req, res) => {
-  console.log(req.requestTime);
+exports.getAllTours = async (req, res) => {
+  //exclude fields from query filter
+  const queryObject = { ...req.query }; //this '{...}' is made so we get a hard copy
+  //because if we simply do 'queryObj = req.query' we will make a pointer
+  //wich will alter the properties of req.query, which is bad
+  const excludedFields = ['page', 'sort', 'limit', 'fields'];
+  excludedFields.forEach(el => delete queryObject[el]);
+  console.log(req.query, queryObject);
+
+  //.find() = query for all the documents in the collection
+  const query = Tour.find(queryObject);
+  //req.query is an object representing the query (e.g. /tour?difficulty=medium)
+  //if the url has a query, it will be passed to the find() function
+  //if not, will find all
+
+  const tours = await query;
+  //this is made to ease the implementation of future functions
+  //such as sort, limit, pagination...
+
   res.status(200).json({
     status: 'success',
     results: tours.length, //just to know how many results
@@ -33,8 +29,11 @@ exports.getAllTours = (req, res) => {
   });
 };
 
-exports.getTour = (req, res) => {
-  const tour = tours.find(tour => tour.id === Number(req.params.id));
+exports.getTour = async (req, res) => {
+  const tour = await Tour.findById(req.params.id);
+  //req.params.id is router.route('/:id') in tourRoutes.js
+  //if it was '/:name' instead of '/:id', the variable would be 'name' (req.params.name)
+
   res.status(200).json({
     status: 'success',
     data: { tour }
@@ -42,36 +41,59 @@ exports.getTour = (req, res) => {
 };
 
 //POST requests
-exports.createTour = (req, res) => {
-  const newId = tours[tours.length - 1].id + 1;
-  const newTour = Object.assign({ id: newId }, req.body);
+exports.createTour = async (req, res) => {
+  try {
+    //create method right in the model itself
+    const newTour = await Tour.create(req.body);
 
-  tours.push(newTour);
-
-  fs.writeFile(
-    './dev-data/data/tours-simple.json',
-    JSON.stringify(tours),
-    err => {
-      //201 == created
-      res.status(201).json({
-        status: 'success',
-        data: {
-          tour: newTour
-        }
-      });
-    }
-  );
+    //201 == created
+    res.status(201).json({
+      status: 'success',
+      data: {
+        tour: newTour
+      }
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err
+    });
+  }
 };
 
 //PATCH
 //put = expect we'll send the entire object to be updated
 //patch = only expect the properties to be updated
+exports.updateTour = async (req, res) => {
+  try {
+    const updatedTour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+      new: true, //this will make that the new document will be returned
+      runsValidators: true //will run the validators specified in the schema to check the updated properties
+    });
+    res.status(200).json({
+      status: 'success',
+      tour: updatedTour
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err
+    });
+  }
+};
 
 //DELETE
-exports.deleteTour = (req, res) => {
-  //this doesn't delete anything, it's just for looks
-  res.status(204).json({
-    status: 'success',
-    data: null
-  });
+exports.deleteTour = async (req, res) => {
+  try {
+    await Tour.findByIdAndRemove(req.params.id);
+    res.status(204).json({
+      status: 'success',
+      data: null
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err
+    });
+  }
 };
