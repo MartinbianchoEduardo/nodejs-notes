@@ -1,7 +1,7 @@
 class APIfeatures {
   constructor(query, queryString) {
-    this.query = query;
-    this.queryString = queryString;
+    this.query = query; //this is the requested information (I guess)
+    this.queryString = queryString; //this is the string passed in the query
   }
 
   filter() {
