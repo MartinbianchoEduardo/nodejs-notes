@@ -17,7 +17,8 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     require: [true, 'an user must have a password'],
-    minLength: 5
+    minLength: 5,
+    select: false //never shows in response
   }
 });
 
@@ -35,6 +36,18 @@ userSchema.pre('save', async function(next) {
   this.password = await bcrypt.hash(this.password, 12);
   next();
 });
+
+//instance method - available in all documents on certain collection
+userSchema.methods.correctPassword = async function(
+  candidatePassword,
+  userPassword
+) {
+  //since the passord has select:false, we have to pass the userPassword as a param
+  //if !select:false we only would need to pass candidatePassword
+  //and this.password would be == userPassword
+
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
 
 const User = new mongoose.model('User', userSchema);
 
