@@ -2,8 +2,6 @@
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
-
-const fs = require('fs');
 const express = require('express');
 
 const app = express();
