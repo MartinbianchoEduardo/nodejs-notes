@@ -68,8 +68,9 @@ exports.login = async (req, res, next) => {
 };
 
 exports.protect = async (req, res, next) => {
-  //get token and check if it exists
+  //get token and check if it exists\\
   let token;
+  //if there's no authorization headers, dont't even start
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
@@ -82,20 +83,23 @@ exports.protect = async (req, res, next) => {
       new AppError('you are not logged in, log in to get access', 401)
     );
   }
-  //validate token (see if the data was manipulated or the token has expired)
+
+  //validate token (see if the data was manipulated or the token has expired)\\
   //have to promisify since verify is an async function
   //promisify makes the function return the promise
   const decodedData = await promisify(jwt.verify)(
     token,
     process.env.JWT_SECRET
     //promisify(jwt.verify) - all this is a function, called with the (token, jwt_secret) params
-  );
+  ); //verify the token with our secret key
 
-  //check if user still exists
-  const freshUser = await User.findById(decoded.id); //id of the user issuing the token
-  if (!freshUser) {
+  //check if user still exists\\
+  const validateUser = await User.findById(decodedData.id); //id of the user issuing the token
+  if (!validateUser) {
     next(new AppError('this user has been deleted'));
   }
 
+  //in case everything is correct, the code reaches this point
+  // req.user = validateUser
   next();
 };
