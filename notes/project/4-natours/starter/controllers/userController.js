@@ -1,4 +1,5 @@
 const User = require('../models/userModel');
+const AppError = require('../util/AppError');
 
 //GET
 exports.getAllUsers = async (req, res) => {
