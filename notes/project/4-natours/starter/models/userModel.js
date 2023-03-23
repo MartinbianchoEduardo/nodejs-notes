@@ -19,7 +19,8 @@ const userSchema = new mongoose.Schema({
     require: [true, 'an user must have a password'],
     minLength: 5,
     select: false //never shows in response
-  }
+  },
+  passwordChangedAt: Date
 });
 
 //password encryption
@@ -48,6 +49,13 @@ userSchema.methods.correctPassword = async function(
 
   return await bcrypt.compare(candidatePassword, userPassword);
 };
+
+// userSchema.methods.hasChangedPassword = function(jwtTimeStamp) {
+//   if (this.passwordChangedAt) {
+//     console.log(this.passwordChangedAt, jwtTimeStamp);
+//   }
+//   return false;
+// };
 
 const User = new mongoose.model('User', userSchema);
 
