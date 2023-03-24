@@ -3,8 +3,6 @@
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const express = require('express');
-const AppError = require('./util/AppError');
-const globalErrorHandler = require('./controllers/errorController');
 
 const app = express();
 
