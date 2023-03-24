@@ -14,7 +14,7 @@ const app = express();
 
 app.use(express.json());
 
-//the third param here is the next function that will be called
+//the third param here is the next middleware that will be called
 app.use((req, res, next) => {
   //add the current time to the request body
   req.requestTime = new Date().toISOString();
