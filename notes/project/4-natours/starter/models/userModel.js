@@ -43,7 +43,7 @@ userSchema.methods.correctPassword = async function(
   candidatePassword,
   userPassword
 ) {
-  //since the passord has select:false, we have to pass the userPassword as a param
+  //since the password has select:false, we have to pass the userPassword as a param
   //if !select:false we only would need to pass candidatePassword
   //and this.password would be == userPassword
 

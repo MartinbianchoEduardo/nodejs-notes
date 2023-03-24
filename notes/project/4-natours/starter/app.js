@@ -3,8 +3,6 @@
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const express = require('express');
-const AppError = require('./util/AppError');
-const globalErrorHandler = require('./controllers/errorController');
 
 const app = express();
 
@@ -16,7 +14,7 @@ const app = express();
 
 app.use(express.json());
 
-//the third param here is the next function that will be called
+//the third param here is the next middleware that will be called
 app.use((req, res, next) => {
   //add the current time to the request body
   req.requestTime = new Date().toISOString();
