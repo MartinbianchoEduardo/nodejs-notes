@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const AppError = require('../util/AppError');
 
 const signToken = id => {
+  //.sign(payload , secret , options)
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: '90d'
   });
@@ -17,7 +18,6 @@ exports.signup = async (req, res, next) => {
       password: req.body.password
     });
 
-    //.sign(payload , secret , options)
     const token = signToken(newUser._id);
 
     res.status(201).json({
@@ -38,7 +38,7 @@ exports.signup = async (req, res, next) => {
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    //check if exist
+    //check if exists
     if (!email || !password) {
       return next(new AppError('Please provide email and password!', 400));
     }
@@ -68,7 +68,7 @@ exports.login = async (req, res, next) => {
 };
 
 exports.protect = async (req, res, next) => {
-  //get token and check if it exists\\
+  //get token and check if it exists
   let token;
   //if there's no authorization headers, dont't even start
   if (
