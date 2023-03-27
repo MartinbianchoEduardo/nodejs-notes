@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     require: [true, 'an user must have a password'],
-    minLength: 5,
+    minLength: 1,
     select: false //never shows in response
   },
   passwordChangedAt: Date
