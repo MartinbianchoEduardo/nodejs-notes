@@ -63,7 +63,7 @@ const tourSchema = new mongoose.Schema({
     default: Date.now(),
     select: false
   },
-  startDates: [Date], //in the array, we want Dates
+  startDates: [Date],
   secretTour: {
     type: Boolean,
     default: false
