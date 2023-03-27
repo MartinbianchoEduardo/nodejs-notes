@@ -70,3 +70,21 @@ const tourSchema = new mongoose.Schema({
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;
+
+//MONGODB INDEXES
+
+// mongodDB by default will make a collection search of all documents after
+// each query, in order to find the wanted data
+// this is extremely bad for perfomance
+// to solve this, we use indexes
+// indexes are other smaller lists made from a document field
+
+// for instance:
+// if I believe that a query for all the 4.5 > rating tours will be made a lot
+// I can create an index for all the 4.5 > rating documents
+// this index will contain a list refering only to the documents that match this criteria
+
+// by default, mongoDB already does this for ids
+// so when you search anything by ID, it only looks at the list of ids it has from the index
+
+// note: this lists are always ordered and the sorting can be changed

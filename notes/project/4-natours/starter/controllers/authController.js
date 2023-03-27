@@ -96,7 +96,7 @@ exports.protect = async (req, res, next) => {
   //check if user still exists\\
   const validateUser = await User.findById(decodedData.id); //id of the user issuing the token
   if (!validateUser) {
-    next(new AppError('this user has been deleted'));
+    next(new AppError('not authorized'));
   }
 
   //in case everything is correct, the code reaches this point
