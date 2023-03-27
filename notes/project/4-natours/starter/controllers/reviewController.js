@@ -1,5 +1,4 @@
-const User = require('../models/userModel');
-const AppError = require('../util/AppError');
+const Review = require('../models/reviewModel');
 
 exports.getAllReviews = async (req, res) => {
   try {
@@ -9,6 +8,24 @@ exports.getAllReviews = async (req, res) => {
       results: reviews.length,
       data: {
         reviews
+      }
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err
+    });
+  }
+};
+
+exports.createReview = async (req, res) => {
+  try {
+    const newReview = await Review.create(req.body);
+
+    res.status(201).json({
+      status: 'success',
+      data: {
+        tour: newReview
       }
     });
   } catch (err) {
