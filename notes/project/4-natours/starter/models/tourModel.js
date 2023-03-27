@@ -67,6 +67,11 @@ const tourSchema = new mongoose.Schema({
   }
 });
 
+tourSchema.index({ price: 1 });
+//this will sort the prices in ascending order in the index's list
+//the queries made for price will only search in this new list
+//this list has only the prices of the tours, in ascending order (1 ascending, -1 - descending)
+
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;
