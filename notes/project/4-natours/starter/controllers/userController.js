@@ -6,7 +6,7 @@ exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.find();
 
-    res.status(400).json({
+    res.status(200).json({
       status: 'success',
       results: users.length,
       data: {
@@ -21,28 +21,28 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-// exports.getUser = (req, res) => {
-//   res.status(500).json({
-//     status: 'error',
-//     message: 'this request is not yet defined'
-//   });
-// };
+exports.getUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'this request is not yet defined'
+  });
+};
 
-// //POST
-// exports.createUser = (req, res) => {
-//   res.status(500).json({
-//     status: 'error',
-//     message: 'this request is not yet defined'
-//   });
-// };
+//POST
+exports.createUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'this request is not yet defined'
+  });
+};
 
-// //DELETE
-// exports.deleteUser = (req, res) => {
-//   res.status(500).json({
-//     status: 'error',
-//     message: 'this request is not yet defined'
-//   });
-// };
+//DELETE
+exports.deleteUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'this request is not yet defined'
+  });
+};
 
 //delete all users
 exports.deleteAll = async (req, res) => {
