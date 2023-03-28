@@ -1,14 +1,19 @@
 //this file (app.js) is only used for things related to express
 
+const path = require('path');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
+const viewRouter = require('./routes/viewRoutes');
 const express = require('express');
 
 const app = express();
 
 app.set('view engine', 'pug');
 app.set('views', './views');
+
+//define that static assets will come from 'public' folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 //MIDDLEWARES (in express)
 //app.use(function)
@@ -28,12 +33,7 @@ app.use((req, res, next) => {
 });
 
 //ROUTES
-//rendering pages in browser (always use .get)
-app.get('/', (req, res) => {
-  //instead of .json, use .render( name of view.pug )
-  res.status(200).render('base');
-});
-
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
