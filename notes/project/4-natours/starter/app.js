@@ -28,6 +28,12 @@ app.use((req, res, next) => {
 });
 
 //ROUTES
+//rendering pages in browser (always use .get)
+app.get('/', (req, res) => {
+  //instead of .json, use .render( name of view.pug )
+  res.status(200).render('base');
+});
+
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
