@@ -7,6 +7,9 @@ const express = require('express');
 
 const app = express();
 
+app.set('view engine', 'pug');
+app.set('views', './views');
+
 //MIDDLEWARES (in express)
 //app.use(function)
 //the position of the middleware in relation to the routing is crucial
