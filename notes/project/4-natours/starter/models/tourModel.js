@@ -119,6 +119,19 @@ tourSchema.index({ price: 1 });
 //the queries made for price will only search in this new list
 //this list has only the prices of the tours, in ascending order (1 ascending, -1 - descending)
 
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id'
+});
+
+tourSchema.pre(/^find/, function(next) {
+  this.populate({
+    path: 'guides'
+  });
+  next();
+});
+
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;

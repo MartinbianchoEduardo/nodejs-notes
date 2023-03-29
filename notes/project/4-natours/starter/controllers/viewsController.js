@@ -10,8 +10,14 @@ exports.getOverview = async (req, res) => {
   });
 };
 
-exports.getTour = (req, res) => {
+exports.getTour = async (req, res) => {
+  const tour = await Tour.findById(req.params.id).populate({
+    path: 'reviews',
+    fields: 'review rating user'
+  });
+
   res.status(200).render('tour', {
-    title: 'forest tiger'
+    title: 'forest tiger',
+    tour
   });
 };
