@@ -10,6 +10,27 @@ const signToken = id => {
   });
 };
 
+const createSendToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
+  // const cookieOptions = {
+  //   expires: new Date(Date.now() + 100 * 24 * 60 * 60 * 1000),
+  //   httpOnly: true
+  // };
+
+  res.cookie('jwt', token);
+
+  // Remove password from output
+  user.password = undefined;
+
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user
+    }
+  });
+};
+
 exports.signup = async (req, res, next) => {
   try {
     const newUser = await User.create({
@@ -18,15 +39,7 @@ exports.signup = async (req, res, next) => {
       password: req.body.password
     });
 
-    const token = signToken(newUser._id);
-
-    res.status(201).json({
-      status: 'success',
-      token: token,
-      data: {
-        user: newUser
-      }
-    });
+    createSendToken(newUser, 201, res);
   } catch (err) {
     res.status(400).json({
       status: 'fail',
@@ -53,12 +66,8 @@ exports.login = async (req, res, next) => {
       return next(new AppError('Incorrect email or password', 401));
     }
 
-    //send jwt back to client
-    const token = signToken(user._id);
-    res.status(200).json({
-      status: 'success',
-      token
-    });
+    //send token back
+    createSendToken(user, 200, res);
   } catch (err) {
     res.status(400).json({
       status: 'fail',
@@ -76,6 +85,8 @@ exports.protect = async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
 
   if (!token) {
