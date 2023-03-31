@@ -48,33 +48,33 @@ exports.signup = async (req, res, next) => {
   }
 };
 
-exports.login = async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-    //check if exists
-    if (!email || !password) {
-      return next(new AppError('Please provide email and password!', 400));
-    }
+// exports.login = async (req, res, next) => {
+//   try {
+//     const { email, password } = req.body;
+//     //check if exists
+//     if (!email || !password) {
+//       return next(new AppError('Please provide email and password!', 400));
+//     }
 
-    //check if user exist and password is correct
-    const user = await User.findOne({ email: email }).select('+password');
-    //.select() is used because in userModel, the user is select: false
-    //and is not returned in responses - so is needed to select manually here
+//     //check if user exist and password is correct
+//     const user = await User.findOne({ email: email }).select('+password');
+//     //.select() is used because in userModel, the user is select: false
+//     //and is not returned in responses - so is needed to select manually here
 
-    //check if password matches the db (this is done in the userModel cause it relates to the data itself)
-    if (!user || !(await user.correctPassword(password, user.password))) {
-      return next(new AppError('Incorrect email or password', 401));
-    }
+//     //check if password matches the db (this is done in the userModel cause it relates to the data itself)
+//     if (!user || !(await user.correctPassword(password, user.password))) {
+//       return next(new AppError('Incorrect email or password', 401));
+//     }
 
-    //send token back
-    createSendToken(user, 200, res);
-  } catch (err) {
-    res.status(400).json({
-      status: 'fail',
-      message: err.message
-    });
-  }
-};
+//     //send token back
+//     createSendToken(user, 200, res);
+//   } catch (err) {
+//     res.status(400).json({
+//       status: 'fail',
+//       message: err.message
+//     });
+//   }
+// };
 
 exports.protect = async (req, res, next) => {
   //get token and check if it exists
