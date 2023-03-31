@@ -24,3 +24,6 @@ document.querySelector('.form').addEventListener('submit', e => {
 
   login(email, password);
 });
+
+//obviously this login isn't secure at all
+//but it can provide a good idea of how to do it
